@@ -40,15 +40,15 @@ export function IpInput({ value, onChange, placeholder }: Props) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder ?? '10.30.1.10'}
-        className="input-dark mono w-40 px-3 py-2 text-sm rounded-md"
+        className="input-themed mono w-40 px-3 py-2 text-sm rounded-md"
       />
       <div className="mt-1.5 min-h-[18px] text-[11px] tracking-tight font-medium">
-        {state.kind === 'idle'      && <span className="text-zinc-700">—</span>}
-        {state.kind === 'invalid'   && <span className="text-amber-400">⚠ IP 형식 오류</span>}
-        {state.kind === 'loading'   && <span className="text-zinc-500">조회중…</span>}
-        {state.kind === 'not_found' && <span className="text-zinc-500">CMDB 미등록</span>}
+        {state.kind === 'idle'      && <span className="text-zinc-400 dark:text-zinc-600">—</span>}
+        {state.kind === 'invalid'   && <span className="text-amber-600 dark:text-amber-400">⚠ IP 형식 오류</span>}
+        {state.kind === 'loading'   && <span className="text-zinc-500 dark:text-zinc-400">조회중…</span>}
+        {state.kind === 'not_found' && <span className="text-zinc-500 dark:text-zinc-400">CMDB 미등록</span>}
         {state.kind === 'found'     && (
-          <span className="text-cyan-300" title={state.system.description}>
+          <span className="text-cyan-700 dark:text-cyan-300" title={state.system.description}>
             <span className="mr-1">●</span>{state.system.name}
           </span>
         )}
