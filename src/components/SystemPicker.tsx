@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import type { NetworkZone, ServerFarm, System } from '../types'
 
 interface Props {
@@ -64,7 +65,7 @@ export function SystemPicker({ open, systems, zones, farms, onSelect, onClose }:
 
   if (!open) return null
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-start justify-center modal-backdrop p-4 pt-[10vh]" onClick={onClose}>
       <div
         className="glass relative w-full max-w-2xl rounded-2xl overflow-hidden flex flex-col max-h-[80vh]"
@@ -163,6 +164,7 @@ export function SystemPicker({ open, systems, zones, farms, onSelect, onClose }:
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
