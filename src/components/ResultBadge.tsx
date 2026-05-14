@@ -1,4 +1,5 @@
 import type { JudgmentResult, ResultKind } from '../lib/judge'
+import { TopologyPath } from './TopologyPath'
 
 const STYLE: Record<
   ResultKind,
@@ -25,44 +26,25 @@ export function ResultBadge({ result }: { result: JudgmentResult }) {
 }
 
 export function ResultDetail({ result }: { result: JudgmentResult }) {
+  if (result.kind === 'INCOMPLETE') {
+    return <div className="text-xs text-zinc-500 dark:text-zinc-400">{result.message}</div>
+  }
+
   return (
-    <div className="text-xs flex flex-col gap-1.5">
-      <div className="text-zinc-700 dark:text-zinc-200 leading-relaxed">{result.message}</div>
-      <div className="flex items-center gap-3 flex-wrap text-zinc-500 dark:text-zinc-400">
-        {result.srcZone && result.dstZone && (
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Zone</span>
-            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-zinc-100 dark:bg-white/[0.05] text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-white/[0.08]">
-              {result.srcZone.name}
-            </span>
-            <svg className="w-3 h-3 text-zinc-400 dark:text-zinc-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
-            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-zinc-100 dark:bg-white/[0.05] text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-white/[0.08]">
-              {result.dstZone.name}
-            </span>
-          </div>
-        )}
-        {result.pathFirewalls.length > 0 && (
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Path</span>
-            {result.pathFirewalls.map((f) => (
-              <span
-                key={f.id}
-                className={
-                  'mono inline-block px-1.5 py-0.5 rounded text-[10px] font-medium border ' +
-                  (result.blockingFirewall?.id === f.id
-                    ? 'bg-rose-100 dark:bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-500/40'
-                    : 'bg-zinc-100 dark:bg-white/[0.05] text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-white/[0.08]')
-                }
-                title={f.description}
-              >
-                {f.name}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
+    <div className="flex flex-col gap-3">
+      <TopologyPath result={result} />
+
+      {result.blockingRule && (
+        <div className="text-[11px] text-zinc-600 dark:text-zinc-400 px-3 py-2 rounded bg-rose-50/60 dark:bg-rose-500/5 border border-rose-200/60 dark:border-rose-500/20 inline-flex items-center gap-2 self-start">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-rose-700 dark:text-rose-300">차단 룰</span>
+          <span className="mono">
+            {result.blockingRule.src_cidr} → {result.blockingRule.dst_cidr}
+          </span>
+          <span className="mono text-zinc-500 dark:text-zinc-500">
+            {Array.isArray(result.blockingRule.ports) ? result.blockingRule.ports.join(',') : result.blockingRule.ports} / {result.blockingRule.protocol}
+          </span>
+        </div>
+      )}
     </div>
   )
 }

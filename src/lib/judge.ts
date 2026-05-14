@@ -3,6 +3,7 @@ import type {
   FirewallRule,
   NetworkZone,
   RuleInput,
+  System,
   ZoneConnection,
 } from '../types'
 import { cidrContains, parsePorts, portsOverlap } from './network'
@@ -21,17 +22,24 @@ export interface JudgmentResult {
   message: string
   srcZone?: NetworkZone
   dstZone?: NetworkZone
+  srcSystem?: System
+  dstSystem?: System
+  /** 경로상의 zones (Source → ... → Dest). length === pathFirewalls.length + 1 */
+  pathZones: NetworkZone[]
   pathFirewalls: Firewall[]
   blockingFirewall?: Firewall
+  /** 경로에서 차단이 발생한 hop index (0부터). undefined면 ALLOWED. */
+  blockingHopIndex?: number
   matchedRules: FirewallRule[]
+  blockingRule?: FirewallRule
 }
 
 function findPath(
   srcId: string,
   dstId: string,
   connections: ZoneConnection[],
-): string[] | null {
-  // BFS — returns ordered list of firewall_ids in the path
+): { zoneIds: string[]; firewallIds: string[] } | null {
+  // BFS — returns ordered zone ids + firewall ids in the path
   const adj = new Map<string, Array<{ zone: string; fw: string }>>()
   for (const c of connections) {
     if (!adj.has(c.zone_a)) adj.set(c.zone_a, [])
@@ -39,24 +47,32 @@ function findPath(
     adj.get(c.zone_a)!.push({ zone: c.zone_b, fw: c.firewall_id })
     adj.get(c.zone_b)!.push({ zone: c.zone_a, fw: c.firewall_id })
   }
-  const queue: Array<{ zone: string; fws: string[] }> = [
-    { zone: srcId, fws: [] },
+  const queue: Array<{ zone: string; zones: string[]; fws: string[] }> = [
+    { zone: srcId, zones: [srcId], fws: [] },
   ]
   const visited = new Set<string>([srcId])
   while (queue.length) {
     const cur = queue.shift()!
-    if (cur.zone === dstId) return cur.fws
+    if (cur.zone === dstId) return { zoneIds: cur.zones, firewallIds: cur.fws }
     for (const n of adj.get(cur.zone) ?? []) {
       if (visited.has(n.zone)) continue
       visited.add(n.zone)
-      queue.push({ zone: n.zone, fws: [...cur.fws, n.fw] })
+      queue.push({
+        zone: n.zone,
+        zones: [...cur.zones, n.zone],
+        fws: [...cur.fws, n.fw],
+      })
     }
   }
   return null
 }
 
 export function judge(rule: RuleInput, topo: Topology): JudgmentResult {
-  const empty = { pathFirewalls: [] as Firewall[], matchedRules: [] as FirewallRule[] }
+  const empty = {
+    pathZones: [] as NetworkZone[],
+    pathFirewalls: [] as Firewall[],
+    matchedRules: [] as FirewallRule[],
+  }
 
   // 1. 입력 완성도 체크
   if (!rule.src_ip || !rule.dst_ip) {
@@ -67,6 +83,10 @@ export function judge(rule: RuleInput, topo: Topology): JudgmentResult {
     return { kind: 'INCOMPLETE', message: '포트 형식 오류 또는 미입력', ...empty }
   }
 
+  // 시스템 정보 (있으면)
+  const srcSystem = topo.systems.find((s) => s.ip === rule.src_ip)
+  const dstSystem = topo.systems.find((s) => s.ip === rule.dst_ip)
+
   // 2. Zone 매칭 (CIDR)
   const srcZone = topo.zones.find((z) => cidrContains(z.cidr, rule.src_ip))
   const dstZone = topo.zones.find((z) => cidrContains(z.cidr, rule.dst_ip))
@@ -75,7 +95,7 @@ export function judge(rule: RuleInput, topo: Topology): JudgmentResult {
     return {
       kind: 'UNREGISTERED',
       message: `${missing} IP가 알려진 네트워크 구간에 속하지 않습니다 (자산 등록 필요)`,
-      srcZone, dstZone,
+      srcZone, dstZone, srcSystem, dstSystem,
       ...empty,
     }
   }
@@ -85,26 +105,32 @@ export function judge(rule: RuleInput, topo: Topology): JudgmentResult {
     return {
       kind: 'SAME_ZONE',
       message: `동일 구간(${srcZone.name}) 내 통신 — 방화벽 신청 불필요`,
-      srcZone, dstZone,
-      ...empty,
+      srcZone, dstZone, srcSystem, dstSystem,
+      pathZones: [srcZone],
+      pathFirewalls: [],
+      matchedRules: [],
     }
   }
 
   // 4. 경로 탐색
-  const fwIds = findPath(srcZone.id, dstZone.id, topo.connections)
-  if (!fwIds) {
+  const path = findPath(srcZone.id, dstZone.id, topo.connections)
+  if (!path) {
     return {
       kind: 'NO_ROUTE',
       message: `${srcZone.name} ↔ ${dstZone.name} 사이 네트워크 경로 없음 — 라우팅 작업 필요`,
-      srcZone, dstZone,
-      ...empty,
+      srcZone, dstZone, srcSystem, dstSystem,
+      pathZones: [srcZone, dstZone],
+      pathFirewalls: [],
+      matchedRules: [],
     }
   }
-  const pathFirewalls = fwIds.map((id) => topo.firewalls.find((f) => f.id === id)!)
+  const pathZones = path.zoneIds.map((id) => topo.zones.find((z) => z.id === id)!)
+  const pathFirewalls = path.firewallIds.map((id) => topo.firewalls.find((f) => f.id === id)!)
 
   // 5. 경로 상 각 방화벽에서 룰 평가
   const matchedRules: FirewallRule[] = []
-  for (const fw of pathFirewalls) {
+  for (let i = 0; i < pathFirewalls.length; i++) {
+    const fw = pathFirewalls[i]
     const applicable = topo.rules.filter((r) => {
       if (r.firewall_id !== fw.id) return false
       if (!cidrContains(r.src_cidr, rule.src_ip)) return false
@@ -119,11 +145,13 @@ export function judge(rule: RuleInput, topo: Topology): JudgmentResult {
     if (blockRule) {
       return {
         kind: 'BLOCKED',
-        message: `${fw.name}에서 BLOCK 룰(${blockRule.src_cidr} → ${blockRule.dst_cidr})에 의해 차단됨 — 방화벽 신청 필요`,
-        srcZone, dstZone,
-        pathFirewalls,
+        message: `${fw.name}에서 BLOCK 룰에 의해 차단됨 — 방화벽 신청 필요`,
+        srcZone, dstZone, srcSystem, dstSystem,
+        pathZones, pathFirewalls,
         blockingFirewall: fw,
+        blockingHopIndex: i,
         matchedRules: [...matchedRules, blockRule],
+        blockingRule: blockRule,
       }
     }
     const allowRule = applicable.find((r) => r.action === 'ALLOW')
@@ -133,9 +161,10 @@ export function judge(rule: RuleInput, topo: Topology): JudgmentResult {
       return {
         kind: 'BLOCKED',
         message: `${fw.name}에 매칭되는 ALLOW 룰이 없음 (기본 차단) — 방화벽 신청 필요`,
-        srcZone, dstZone,
-        pathFirewalls,
+        srcZone, dstZone, srcSystem, dstSystem,
+        pathZones, pathFirewalls,
         blockingFirewall: fw,
+        blockingHopIndex: i,
         matchedRules,
       }
     }
@@ -143,9 +172,9 @@ export function judge(rule: RuleInput, topo: Topology): JudgmentResult {
 
   return {
     kind: 'ALLOWED',
-    message: `경로 상 모든 방화벽(${pathFirewalls.map((f) => f.name).join(', ')}) 통과 — 통신 가능`,
-    srcZone, dstZone,
-    pathFirewalls,
+    message: `경로 상 모든 방화벽 통과 — 통신 가능`,
+    srcZone, dstZone, srcSystem, dstSystem,
+    pathZones, pathFirewalls,
     matchedRules,
   }
 }

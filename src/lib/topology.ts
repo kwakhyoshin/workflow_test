@@ -5,6 +5,7 @@ import type {
   FirewallRule,
   NetworkZone,
   ServerFarm,
+  System,
   ZoneConnection,
 } from '../types'
 
@@ -14,6 +15,7 @@ export interface Topology {
   firewalls: Firewall[]
   connections: ZoneConnection[]
   rules: FirewallRule[]
+  systems: System[]
 }
 
 async function fetchCollection<T>(name: string): Promise<T[]> {
@@ -22,12 +24,13 @@ async function fetchCollection<T>(name: string): Promise<T[]> {
 }
 
 export async function loadTopology(): Promise<Topology> {
-  const [zones, farms, firewalls, connections, rules] = await Promise.all([
+  const [zones, farms, firewalls, connections, rules, systems] = await Promise.all([
     fetchCollection<NetworkZone>('network_zones'),
     fetchCollection<ServerFarm>('server_farms'),
     fetchCollection<Firewall>('firewalls'),
     fetchCollection<ZoneConnection>('zone_connections'),
     fetchCollection<FirewallRule>('firewall_rules'),
+    fetchCollection<System>('systems'),
   ])
-  return { zones, farms, firewalls, connections, rules }
+  return { zones, farms, firewalls, connections, rules, systems }
 }

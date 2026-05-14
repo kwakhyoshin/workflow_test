@@ -4,7 +4,7 @@ import { IpInput } from './IpInput'
 import { ResultBadge, ResultDetail } from './ResultBadge'
 import { loadTopology, type Topology } from '../lib/topology'
 import { judge, type JudgmentResult } from '../lib/judge'
-import { CsrModal } from './CsrModal'
+import { CsrPanel } from './CsrPanel'
 
 function newRule(): RuleInput {
   return {
@@ -66,6 +66,7 @@ export function RuleTable() {
   const evaluated = Object.keys(results).length > 0
 
   return (
+    <>
     <div className="glass rounded-2xl overflow-hidden">
       {/* Card header */}
       <div className="px-6 py-4 border-b border-zinc-200 dark:border-white/[0.06] flex items-center justify-between">
@@ -205,11 +206,13 @@ export function RuleTable() {
         </div>
       </div>
 
-      <CsrModal
-        open={csrOpen}
-        onClose={() => setCsrOpen(false)}
-        rulesForRequest={csrEligibleRules}
-      />
     </div>
+
+    <CsrPanel
+      open={csrOpen}
+      onClose={() => setCsrOpen(false)}
+      rulesForRequest={csrEligibleRules}
+    />
+    </>
   )
 }
