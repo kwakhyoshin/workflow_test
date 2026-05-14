@@ -17,7 +17,11 @@ export interface System {
   ip: string
   farm_id: string
   zone_id: string
-  description: string
+  description: string         // 짧은 라벨 (UI 표시용)
+  purpose?: string            // 비즈니스 용도 상세 — AI 사유 추론용 컨텍스트
+  owner_team?: string         // 운영 담당 팀
+  service_type?: string       // "Web Server" | "Database" | "API Gateway" 등
+  typical_ports?: number[]    // 일반적으로 열려있는 포트
 }
 
 export interface Firewall {
