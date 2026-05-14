@@ -1,0 +1,86 @@
+{
+  "network_zones": [
+    { "id": "zone-dmz",    "name": "DMZ",        "cidr": "10.40.1.0/24" },
+    { "id": "zone-biz",    "name": "업무시스템", "cidr": "10.30.1.0/24" },
+    { "id": "zone-office", "name": "사무실",     "cidr": "10.10.0.0/16" },
+    { "id": "zone-dev",    "name": "개발",       "cidr": "10.20.1.0/24" },
+    { "id": "zone-db",     "name": "DB",         "cidr": "10.50.1.0/24" },
+    { "id": "zone-sec",    "name": "보안",       "cidr": "10.30.2.0/24" },
+    { "id": "zone-infra",  "name": "인프라",     "cidr": "10.30.3.0/24" }
+  ],
+
+  "server_farms": [
+    { "id": "farm-dmz",   "name": "DMZ Farm",       "zone_id": "zone-dmz",   "cidr": "10.40.1.0/24" },
+    { "id": "farm-biz",   "name": "업무시스템 Farm", "zone_id": "zone-biz",   "cidr": "10.30.1.0/24" },
+    { "id": "farm-dev",   "name": "개발 Farm",      "zone_id": "zone-dev",   "cidr": "10.20.1.0/24" },
+    { "id": "farm-db",    "name": "DB Farm",        "zone_id": "zone-db",    "cidr": "10.50.1.0/24" },
+    { "id": "farm-sec",   "name": "보안 Farm",      "zone_id": "zone-sec",   "cidr": "10.30.2.0/24" },
+    { "id": "farm-infra", "name": "인프라 Farm",    "zone_id": "zone-infra", "cidr": "10.30.3.0/24" }
+  ],
+
+  "firewalls": [
+    { "id": "fw-dmz-01", "name": "FW-DMZ-01", "description": "Internet ↔ DMZ" },
+    { "id": "fw-biz-01", "name": "FW-BIZ-01", "description": "DMZ/사무실 ↔ 업무시스템" },
+    { "id": "fw-dev-01", "name": "FW-DEV-01", "description": "사무실 ↔ 개발" },
+    { "id": "fw-db-01",  "name": "FW-DB-01",  "description": "업무/개발 ↔ DB" },
+    { "id": "fw-sec-01", "name": "FW-SEC-01", "description": "업무 ↔ 보안/인프라" }
+  ],
+
+  "zone_connections": [
+    { "id": "conn-internet-dmz", "zone_a": "_internet",  "zone_b": "zone-dmz",   "firewall_id": "fw-dmz-01" },
+    { "id": "conn-dmz-biz",      "zone_a": "zone-dmz",   "zone_b": "zone-biz",   "firewall_id": "fw-biz-01" },
+    { "id": "conn-office-biz",   "zone_a": "zone-office","zone_b": "zone-biz",   "firewall_id": "fw-biz-01" },
+    { "id": "conn-office-dev",   "zone_a": "zone-office","zone_b": "zone-dev",   "firewall_id": "fw-dev-01" },
+    { "id": "conn-biz-db",       "zone_a": "zone-biz",   "zone_b": "zone-db",    "firewall_id": "fw-db-01"  },
+    { "id": "conn-dev-db",       "zone_a": "zone-dev",   "zone_b": "zone-db",    "firewall_id": "fw-db-01"  },
+    { "id": "conn-biz-sec",      "zone_a": "zone-biz",   "zone_b": "zone-sec",   "firewall_id": "fw-sec-01" },
+    { "id": "conn-biz-infra",    "zone_a": "zone-biz",   "zone_b": "zone-infra", "firewall_id": "fw-sec-01" }
+  ],
+
+  "systems": [
+    { "id": "sys-web-001",  "name": "WEB-SVR-001", "ip": "10.40.1.10", "farm_id": "farm-dmz",   "zone_id": "zone-dmz",   "description": "외부 웹서버" },
+    { "id": "sys-web-002",  "name": "WEB-SVR-002", "ip": "10.40.1.11", "farm_id": "farm-dmz",   "zone_id": "zone-dmz",   "description": "외부 웹서버" },
+    { "id": "sys-api-001",  "name": "API-GW-001",  "ip": "10.40.1.20", "farm_id": "farm-dmz",   "zone_id": "zone-dmz",   "description": "API Gateway" },
+    { "id": "sys-api-002",  "name": "API-GW-002",  "ip": "10.40.1.21", "farm_id": "farm-dmz",   "zone_id": "zone-dmz",   "description": "API Gateway (HA)" },
+
+    { "id": "sys-erp-001",  "name": "ERP-SVR-001", "ip": "10.30.1.10", "farm_id": "farm-biz",   "zone_id": "zone-biz",   "description": "ERP 메인" },
+    { "id": "sys-erp-002",  "name": "ERP-SVR-002", "ip": "10.30.1.11", "farm_id": "farm-biz",   "zone_id": "zone-biz",   "description": "ERP 배치" },
+    { "id": "sys-hr-001",   "name": "HR-SVR-001",  "ip": "10.30.1.20", "farm_id": "farm-biz",   "zone_id": "zone-biz",   "description": "인사 시스템" },
+    { "id": "sys-grp-001",  "name": "GRP-SVR-001", "ip": "10.30.1.30", "farm_id": "farm-biz",   "zone_id": "zone-biz",   "description": "그룹웨어" },
+    { "id": "sys-apv-001",  "name": "APV-SVR-001", "ip": "10.30.1.40", "farm_id": "farm-biz",   "zone_id": "zone-biz",   "description": "전자결재" },
+
+    { "id": "sys-dev-001",  "name": "DEV-SVR-001", "ip": "10.20.1.10", "farm_id": "farm-dev",   "zone_id": "zone-dev",   "description": "개발서버 A" },
+    { "id": "sys-dev-002",  "name": "DEV-SVR-002", "ip": "10.20.1.11", "farm_id": "farm-dev",   "zone_id": "zone-dev",   "description": "개발서버 B" },
+    { "id": "sys-ci-001",   "name": "CI-SVR-001",  "ip": "10.20.1.20", "farm_id": "farm-dev",   "zone_id": "zone-dev",   "description": "Jenkins CI" },
+    { "id": "sys-git-001",  "name": "GIT-SVR-001", "ip": "10.20.1.30", "farm_id": "farm-dev",   "zone_id": "zone-dev",   "description": "GitLab" },
+
+    { "id": "sys-ora-001",  "name": "ORA-SVR-001", "ip": "10.50.1.10", "farm_id": "farm-db",    "zone_id": "zone-db",    "description": "Oracle 운영" },
+    { "id": "sys-ora-002",  "name": "ORA-SVR-002", "ip": "10.50.1.11", "farm_id": "farm-db",    "zone_id": "zone-db",    "description": "Oracle DR" },
+    { "id": "sys-mys-001",  "name": "MYS-SVR-001", "ip": "10.50.1.20", "farm_id": "farm-db",    "zone_id": "zone-db",    "description": "MySQL" },
+    { "id": "sys-mgo-001",  "name": "MGO-SVR-001", "ip": "10.50.1.30", "farm_id": "farm-db",    "zone_id": "zone-db",    "description": "MongoDB" },
+    { "id": "sys-rds-001",  "name": "RDS-SVR-001", "ip": "10.50.1.40", "farm_id": "farm-db",    "zone_id": "zone-db",    "description": "Redis 캐시" },
+
+    { "id": "sys-siem-001", "name": "SIEM-SVR-001","ip": "10.30.2.10", "farm_id": "farm-sec",   "zone_id": "zone-sec",   "description": "SIEM" },
+    { "id": "sys-waf-001",  "name": "WAF-SVR-001", "ip": "10.30.2.20", "farm_id": "farm-sec",   "zone_id": "zone-sec",   "description": "WAF 관리" },
+    { "id": "sys-vpn-001",  "name": "VPN-SVR-001", "ip": "10.30.2.30", "farm_id": "farm-sec",   "zone_id": "zone-sec",   "description": "VPN G/W" },
+
+    { "id": "sys-mon-001",  "name": "MON-SVR-001", "ip": "10.30.3.10", "farm_id": "farm-infra", "zone_id": "zone-infra", "description": "모니터링 (Zabbix)" },
+    { "id": "sys-bak-001",  "name": "BAK-SVR-001", "ip": "10.30.3.20", "farm_id": "farm-infra", "zone_id": "zone-infra", "description": "백업 서버" },
+    { "id": "sys-dns-001",  "name": "DNS-SVR-001", "ip": "10.30.3.30", "farm_id": "farm-infra", "zone_id": "zone-infra", "description": "내부 DNS" },
+    { "id": "sys-ntp-001",  "name": "NTP-SVR-001", "ip": "10.30.3.40", "farm_id": "farm-infra", "zone_id": "zone-infra", "description": "NTP" }
+  ],
+
+  "firewall_rules": [
+    { "id": "rule-001", "firewall_id": "fw-dmz-01", "src_cidr": "0.0.0.0/0",    "dst_cidr": "10.40.1.0/24", "ports": [80, 443],    "protocol": "TCP", "action": "ALLOW" },
+    { "id": "rule-002", "firewall_id": "fw-dmz-01", "src_cidr": "0.0.0.0/0",    "dst_cidr": "10.40.1.0/24", "ports": [22],         "protocol": "TCP", "action": "BLOCK" },
+    { "id": "rule-003", "firewall_id": "fw-biz-01", "src_cidr": "10.10.0.0/16", "dst_cidr": "10.30.1.0/24", "ports": [80, 443],    "protocol": "TCP", "action": "ALLOW" },
+    { "id": "rule-004", "firewall_id": "fw-biz-01", "src_cidr": "10.10.0.0/16", "dst_cidr": "10.30.1.0/24", "ports": [22],         "protocol": "TCP", "action": "BLOCK" },
+    { "id": "rule-005", "firewall_id": "fw-biz-01", "src_cidr": "10.40.1.0/24", "dst_cidr": "10.30.1.0/24", "ports": [8080],       "protocol": "TCP", "action": "ALLOW" },
+    { "id": "rule-006", "firewall_id": "fw-db-01",  "src_cidr": "10.30.1.0/24", "dst_cidr": "10.50.1.0/24", "ports": [1521, 3306], "protocol": "TCP", "action": "ALLOW" },
+    { "id": "rule-007", "firewall_id": "fw-db-01",  "src_cidr": "10.10.0.0/16", "dst_cidr": "10.50.1.0/24", "ports": "ANY",        "protocol": "ANY", "action": "BLOCK" },
+    { "id": "rule-008", "firewall_id": "fw-db-01",  "src_cidr": "10.20.1.0/24", "dst_cidr": "10.50.1.0/24", "ports": [3306, 27017],"protocol": "TCP", "action": "ALLOW" },
+    { "id": "rule-009", "firewall_id": "fw-dev-01", "src_cidr": "10.10.0.0/16", "dst_cidr": "10.20.1.0/24", "ports": [22, 80, 443],"protocol": "TCP", "action": "ALLOW" },
+    { "id": "rule-010", "firewall_id": "fw-sec-01", "src_cidr": "10.30.1.0/24", "dst_cidr": "10.30.2.0/24", "ports": "ANY",        "protocol": "ANY", "action": "BLOCK" },
+    { "id": "rule-011", "firewall_id": "fw-sec-01", "src_cidr": "10.30.3.0/24", "dst_cidr": "0.0.0.0/0",    "ports": [161],        "protocol": "UDP", "action": "ALLOW" }
+  ]
+}

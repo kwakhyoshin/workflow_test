@@ -1,0 +1,27 @@
+node_modules
+dist
+dist-ssr
+*.local
+.vite
+
+# TS build artifacts
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+
+# Office lock files
+~$*
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local env
+.env
+.env.local

@@ -1,0 +1,13 @@
+{
+  "name": "firewall-pilot-seed",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Firestore seed script for firewall request pilot",
+  "scripts": {
+    "seed": "node seed.mjs"
+  },
+  "dependencies": {
+    "firebase": "^10.13.0"
+  }
+}

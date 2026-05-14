@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>방화벽 요청 시스템 - 네트워크 토폴로지 (파일럿)</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    background: #0f1419;
+    color: #e6e6e6;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    margin: 0 0 8px 0;
+    font-size: 22px;
+    color: #4fc3f7;
+  }
+  .subtitle { color: #8a99a8; font-size: 13px; margin-bottom: 16px; }
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  svg {
+    background: #1a212b;
+    border-radius: 8px;
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .zone-rect { fill-opacity: 0.15; stroke-width: 2; }
+  .zone-label { font-size: 14px; font-weight: 600; fill: #fff; }
+  .zone-cidr  { font-size: 11px; fill: #b0bec5; }
+
+  .system { cursor: pointer; transition: all .15s; }
+  .system rect { fill: #263238; stroke: #546e7a; stroke-width: 1; rx: 4; }
+  .system text { font-size: 10px; fill: #e0f2f1; text-anchor: middle; font-family: 'Consolas', monospace; }
+  .system:hover rect { stroke: #4fc3f7; stroke-width: 2; fill: #37474f; }
+
+  .firewall rect { fill: #b71c1c; stroke: #ff5252; stroke-width: 2; rx: 4; }
+  .firewall text { font-size: 11px; fill: #fff; text-anchor: middle; font-weight: 600; }
+
+  .switch-stack rect { fill: #455a64; stroke: #78909c; stroke-width: 1; rx: 2; }
+  .switch-stack text { font-size: 10px; fill: #cfd8dc; text-anchor: middle; }
+
+  .internet circle { fill: #1565c0; stroke: #64b5f6; stroke-width: 2; }
+  .internet text  { font-size: 13px; fill: #fff; text-anchor: middle; font-weight: 600; }
+
+  .link { stroke: #607d8b; stroke-width: 2; fill: none; }
+  .link-blocked { stroke: #ef5350; stroke-dasharray: 4,3; }
+
+  .legend {
+    margin-top: 16px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    background: #1a212b;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-size: 12px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-color { width: 14px; height: 14px; border-radius: 3px; }
+
+  .tooltip {
+    position: fixed;
+    background: #263238;
+    color: #fff;
+    border: 1px solid #4fc3f7;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    pointer-events: none;
+    display: none;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  }
+  .tooltip strong { color: #4fc3f7; }
+
+  .stats {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    background: #1a212b;
+    padding: 10px 16px;
+    border-radius: 6px;
+    border-left: 3px solid #4fc3f7;
+  }
+  .stat .num { font-size: 20px; font-weight: 700; color: #4fc3f7; }
+  .stat .lbl { font-size: 11px; color: #8a99a8; }
+
+  table.rules {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 12px;
+    background: #1a212b;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  table.rules th {
+    background: #263238;
+    padding: 10px;
+    text-align: left;
+    color: #4fc3f7;
+    font-weight: 600;
+  }
+  table.rules td { padding: 8px 10px; border-top: 1px solid #2c3640; }
+  .badge-allow { background: #2e7d32; color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 11px; }
+  .badge-block { background: #c62828; color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 11px; }
+
+  h2 { color: #4fc3f7; font-size: 16px; margin-top: 28px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>방화벽 요청 시스템 — 파일럿 네트워크 토폴로지</h1>
+  <div class="subtitle">가상 CMDB / 시스템 24개 · 서버팜 6개 · 방화벽 5개 · 스위치 100대</div>
+
+  <div class="stats">
+    <div class="stat"><div class="num">100</div><div class="lbl">네트워크 스위치</div></div>
+    <div class="stat"><div class="num">5</div><div class="lbl">방화벽</div></div>
+    <div class="stat"><div class="num">6</div><div class="lbl">서버팜</div></div>
+    <div class="stat"><div class="num">24</div><div class="lbl">시스템</div></div>
+    <div class="stat"><div class="num">7</div><div class="lbl">네트워크 Zone</div></div>
+  </div>
+
+  <svg viewBox="0 0 1400 1050" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- Connections (drawn first, behind nodes) -->
+    <path class="link" d="M 700,60 L 700,110"/>
+    <path class="link" d="M 700,160 L 700,200"/>
+    <path class="link" d="M 700,330 L 700,370"/>
+    <path class="link" d="M 700,420 L 700,460"/>
+    <path class="link" d="M 700,420 L 250,460"/>
+    <path class="link" d="M 700,420 L 1150,460"/>
+    <path class="link" d="M 700,590 L 700,630"/>
+    <path class="link" d="M 1150,590 L 1150,630"/>
+    <path class="link" d="M 700,680 L 700,720"/>
+    <path class="link" d="M 1150,680 L 1150,720"/>
+    <path class="link" d="M 1150,860 L 1150,900"/>
+
+    <!-- Internet -->
+    <g class="internet">
+      <circle cx="700" cy="40" r="28"/>
+      <text x="700" y="45">Internet</text>
+    </g>
+
+    <!-- FW-DMZ-01 -->
+    <g class="firewall" data-name="FW-DMZ-01" data-zone="Internet ↔ DMZ">
+      <rect x="640" y="110" width="120" height="50"/>
+      <text x="700" y="135">🔥 FW-DMZ-01</text>
+      <text x="700" y="152" style="font-size:10px;font-weight:400">Internet ↔ DMZ</text>
+    </g>
+
+    <!-- DMZ Zone -->
+    <rect class="zone-rect" x="450" y="200" width="500" height="130" fill="#7e57c2" stroke="#9575cd" rx="8"/>
+    <text class="zone-label" x="470" y="225">① DMZ Farm</text>
+    <text class="zone-cidr"  x="470" y="242">10.40.1.0/24</text>
+
+    <g class="system" data-name="WEB-SVR-001" data-ip="10.40.1.10" data-desc="외부 웹서버">
+      <rect x="475" y="260" width="100" height="50"/>
+      <text x="525" y="280">WEB-SVR-001</text>
+      <text x="525" y="295" style="font-size:9px;fill:#90a4ae">10.40.1.10</text>
+    </g>
+    <g class="system" data-name="WEB-SVR-002" data-ip="10.40.1.11" data-desc="외부 웹서버">
+      <rect x="585" y="260" width="100" height="50"/>
+      <text x="635" y="280">WEB-SVR-002</text>
+      <text x="635" y="295" style="font-size:9px;fill:#90a4ae">10.40.1.11</text>
+    </g>
+    <g class="system" data-name="API-GW-001" data-ip="10.40.1.20" data-desc="API Gateway">
+      <rect x="695" y="260" width="100" height="50"/>
+      <text x="745" y="280">API-GW-001</text>
+      <text x="745" y="295" style="font-size:9px;fill:#90a4ae">10.40.1.20</text>
+    </g>
+    <g class="system" data-name="API-GW-002" data-ip="10.40.1.21" data-desc="API Gateway (HA)">
+      <rect x="805" y="260" width="100" height="50"/>
+      <text x="855" y="280">API-GW-002</text>
+      <text x="855" y="295" style="font-size:9px;fill:#90a4ae">10.40.1.21</text>
+    </g>
+
+    <!-- FW-BIZ-01 -->
+    <g class="firewall" data-name="FW-BIZ-01" data-zone="DMZ ↔ 업무/사무실">
+      <rect x="640" y="370" width="120" height="50"/>
+      <text x="700" y="395">🔥 FW-BIZ-01</text>
+      <text x="700" y="412" style="font-size:10px;font-weight:400">DMZ ↔ 업무/사무실</text>
+    </g>
+
+    <!-- 사무실 Zone (left) -->
+    <rect class="zone-rect" x="80" y="460" width="340" height="130" fill="#26a69a" stroke="#4db6ac" rx="8"/>
+    <text class="zone-label" x="100" y="485">⑦ 사무실 Zone (User LAN)</text>
+    <text class="zone-cidr"  x="100" y="502">10.10.0.0/16 · DHCP 클라이언트</text>
+    <g class="switch-stack">
+      <rect x="110" y="520" width="80" height="40"/>
+      <text x="150" y="540">사무실 SW</text>
+      <text x="150" y="554" style="font-size:9px">×30</text>
+    </g>
+    <text x="210" y="540" style="font-size:11px;fill:#cfd8dc">사용자 PC, 노트북</text>
+    <text x="210" y="555" style="font-size:10px;fill:#8a99a8">(IP 동적 할당, CMDB 미등록)</text>
+
+    <!-- 업무시스템 Zone (center) -->
+    <rect class="zone-rect" x="460" y="460" width="480" height="130" fill="#42a5f5" stroke="#64b5f6" rx="8"/>
+    <text class="zone-label" x="480" y="485">② 업무시스템 Farm</text>
+    <text class="zone-cidr"  x="480" y="502">10.30.1.0/24</text>
+
+    <g class="system" data-name="ERP-SVR-001" data-ip="10.30.1.10" data-desc="ERP 메인 시스템">
+      <rect x="475" y="520" width="85" height="45"/>
+      <text x="517" y="538">ERP-SVR-001</text>
+      <text x="517" y="552" style="font-size:9px;fill:#90a4ae">10.30.1.10</text>
+    </g>
+    <g class="system" data-name="ERP-SVR-002" data-ip="10.30.1.11" data-desc="ERP 배치">
+      <rect x="565" y="520" width="85" height="45"/>
+      <text x="607" y="538">ERP-SVR-002</text>
+      <text x="607" y="552" style="font-size:9px;fill:#90a4ae">10.30.1.11</text>
+    </g>
+    <g class="system" data-name="HR-SVR-001" data-ip="10.30.1.20" data-desc="인사 시스템">
+      <rect x="655" y="520" width="85" height="45"/>
+      <text x="697" y="538">HR-SVR-001</text>
+      <text x="697" y="552" style="font-size:9px;fill:#90a4ae">10.30.1.20</text>
+    </g>
+    <g class="system" data-name="GRP-SVR-001" data-ip="10.30.1.30" data-desc="그룹웨어">
+      <rect x="745" y="520" width="85" height="45"/>
+      <text x="787" y="538">GRP-SVR-001</text>
+      <text x="787" y="552" style="font-size:9px;fill:#90a4ae">10.30.1.30</text>
+    </g>
+    <g class="system" data-name="APV-SVR-001" data-ip="10.30.1.40" data-desc="전자결재">
+      <rect x="835" y="520" width="85" height="45"/>
+      <text x="877" y="538">APV-SVR-001</text>
+      <text x="877" y="552" style="font-size:9px;fill:#90a4ae">10.30.1.40</text>
+    </g>
+
+    <!-- 개발 Zone (right) -->
+    <rect class="zone-rect" x="980" y="460" width="380" height="130" fill="#ffa726" stroke="#ffb74d" rx="8"/>
+    <text class="zone-label" x="1000" y="485">③ 개발 Farm</text>
+    <text class="zone-cidr"  x="1000" y="502">10.20.1.0/24</text>
+
+    <g class="system" data-name="DEV-SVR-001" data-ip="10.20.1.10" data-desc="개발서버 A">
+      <rect x="995" y="520" width="85" height="45"/>
+      <text x="1037" y="538">DEV-SVR-001</text>
+      <text x="1037" y="552" style="font-size:9px;fill:#90a4ae">10.20.1.10</text>
+    </g>
+    <g class="system" data-name="DEV-SVR-002" data-ip="10.20.1.11" data-desc="개발서버 B">
+      <rect x="1085" y="520" width="85" height="45"/>
+      <text x="1127" y="538">DEV-SVR-002</text>
+      <text x="1127" y="552" style="font-size:9px;fill:#90a4ae">10.20.1.11</text>
+    </g>
+    <g class="system" data-name="CI-SVR-001" data-ip="10.20.1.20" data-desc="Jenkins CI">
+      <rect x="1175" y="520" width="85" height="45"/>
+      <text x="1217" y="538">CI-SVR-001</text>
+      <text x="1217" y="552" style="font-size:9px;fill:#90a4ae">10.20.1.20</text>
+    </g>
+    <g class="system" data-name="GIT-SVR-001" data-ip="10.20.1.30" data-desc="GitLab">
+      <rect x="1265" y="520" width="85" height="45"/>
+      <text x="1307" y="538">GIT-SVR-001</text>
+      <text x="1307" y="552" style="font-size:9px;fill:#90a4ae">10.20.1.30</text>
+    </g>
+
+    <!-- FW-DB-01 -->
+    <g class="firewall" data-name="FW-DB-01" data-zone="업무/개발 ↔ DB">
+      <rect x="640" y="630" width="120" height="50"/>
+      <text x="700" y="655">🔥 FW-DB-01</text>
+      <text x="700" y="672" style="font-size:10px;font-weight:400">→ DB Farm</text>
+    </g>
+
+    <!-- FW-DEV-01 -->
+    <g class="firewall" data-name="FW-DEV-01" data-zone="사무실 ↔ 개발">
+      <rect x="1090" y="630" width="120" height="50"/>
+      <text x="1150" y="655">🔥 FW-DEV-01</text>
+      <text x="1150" y="672" style="font-size:10px;font-weight:400">→ 개발 Farm</text>
+    </g>
+
+    <!-- DB Zone -->
+    <rect class="zone-rect" x="450" y="720" width="500" height="140" fill="#ef5350" stroke="#e57373" rx="8"/>
+    <text class="zone-label" x="470" y="745">④ DB Farm</text>
+    <text class="zone-cidr"  x="470" y="762">10.50.1.0/24</text>
+
+    <g class="system" data-name="ORA-SVR-001" data-ip="10.50.1.10" data-desc="Oracle 운영 DB">
+      <rect x="475" y="780" width="85" height="45"/>
+      <text x="517" y="798">ORA-SVR-001</text>
+      <text x="517" y="812" style="font-size:9px;fill:#90a4ae">10.50.1.10</text>
+    </g>
+    <g class="system" data-name="ORA-SVR-002" data-ip="10.50.1.11" data-desc="Oracle DR">
+      <rect x="565" y="780" width="85" height="45"/>
+      <text x="607" y="798">ORA-SVR-002</text>
+      <text x="607" y="812" style="font-size:9px;fill:#90a4ae">10.50.1.11</text>
+    </g>
+    <g class="system" data-name="MYS-SVR-001" data-ip="10.50.1.20" data-desc="MySQL">
+      <rect x="655" y="780" width="85" height="45"/>
+      <text x="697" y="798">MYS-SVR-001</text>
+      <text x="697" y="812" style="font-size:9px;fill:#90a4ae">10.50.1.20</text>
+    </g>
+    <g class="system" data-name="MGO-SVR-001" data-ip="10.50.1.30" data-desc="MongoDB">
+      <rect x="745" y="780" width="85" height="45"/>
+      <text x="787" y="798">MGO-SVR-001</text>
+      <text x="787" y="812" style="font-size:9px;fill:#90a4ae">10.50.1.30</text>
+    </g>
+    <g class="system" data-name="RDS-SVR-001" data-ip="10.50.1.40" data-desc="Redis 캐시">
+      <rect x="835" y="780" width="85" height="45"/>
+      <text x="877" y="798">RDS-SVR-001</text>
+      <text x="877" y="812" style="font-size:9px;fill:#90a4ae">10.50.1.40</text>
+    </g>
+
+    <!-- FW-SEC-01 -->
+    <g class="firewall" data-name="FW-SEC-01" data-zone="관리망 → 보안/인프라">
+      <rect x="1090" y="810" width="120" height="50"/>
+      <text x="1150" y="835">🔥 FW-SEC-01</text>
+      <text x="1150" y="852" style="font-size:10px;font-weight:400">→ 보안/인프라</text>
+    </g>
+
+    <!-- 보안 + 인프라 Zone -->
+    <rect class="zone-rect" x="980" y="900" width="380" height="135" fill="#66bb6a" stroke="#81c784" rx="8"/>
+    <text class="zone-label" x="1000" y="925">⑤⑥ 보안 / 인프라 Farm</text>
+    <text class="zone-cidr"  x="1000" y="942">10.30.2.0/24 · 10.30.3.0/24</text>
+
+    <g class="system" data-name="SIEM-SVR-001" data-ip="10.30.2.10" data-desc="SIEM">
+      <rect x="995" y="958" width="80" height="36"/>
+      <text x="1035" y="974">SIEM-SVR-001</text>
+      <text x="1035" y="987" style="font-size:9px;fill:#90a4ae">10.30.2.10</text>
+    </g>
+    <g class="system" data-name="WAF-SVR-001" data-ip="10.30.2.20" data-desc="WAF 관리">
+      <rect x="1080" y="958" width="80" height="36"/>
+      <text x="1120" y="974">WAF-SVR-001</text>
+      <text x="1120" y="987" style="font-size:9px;fill:#90a4ae">10.30.2.20</text>
+    </g>
+    <g class="system" data-name="VPN-SVR-001" data-ip="10.30.2.30" data-desc="VPN G/W">
+      <rect x="1165" y="958" width="80" height="36"/>
+      <text x="1205" y="974">VPN-SVR-001</text>
+      <text x="1205" y="987" style="font-size:9px;fill:#90a4ae">10.30.2.30</text>
+    </g>
+    <g class="system" data-name="MON-SVR-001" data-ip="10.30.3.10" data-desc="모니터링 (Zabbix)">
+      <rect x="1250" y="958" width="80" height="36"/>
+      <text x="1290" y="974">MON-SVR-001</text>
+      <text x="1290" y="987" style="font-size:9px;fill:#90a4ae">10.30.3.10</text>
+    </g>
+    <g class="system" data-name="BAK-SVR-001" data-ip="10.30.3.20" data-desc="백업 서버">
+      <rect x="995" y="998" width="80" height="32"/>
+      <text x="1035" y="1014">BAK-SVR-001</text>
+      <text x="1035" y="1026" style="font-size:9px;fill:#90a4ae">10.30.3.20</text>
+    </g>
+    <g class="system" data-name="DNS-SVR-001" data-ip="10.30.3.30" data-desc="내부 DNS">
+      <rect x="1080" y="998" width="80" height="32"/>
+      <text x="1120" y="1014">DNS-SVR-001</text>
+      <text x="1120" y="1026" style="font-size:9px;fill:#90a4ae">10.30.3.30</text>
+    </g>
+    <g class="system" data-name="NTP-SVR-001" data-ip="10.30.3.40" data-desc="NTP 서버">
+      <rect x="1165" y="998" width="80" height="32"/>
+      <text x="1205" y="1014">NTP-SVR-001</text>
+      <text x="1205" y="1026" style="font-size:9px;fill:#90a4ae">10.30.3.40</text>
+    </g>
+
+    <!-- Switch stacks indicator (Core/Dist) -->
+    <g class="switch-stack">
+      <rect x="40" y="200" width="100" height="36"/>
+      <text x="90" y="216">Core SW</text>
+      <text x="90" y="230" style="font-size:9px">×2</text>
+    </g>
+    <g class="switch-stack">
+      <rect x="40" y="246" width="100" height="36"/>
+      <text x="90" y="262">Dist SW</text>
+      <text x="90" y="276" style="font-size:9px">×10</text>
+    </g>
+    <g class="switch-stack">
+      <rect x="40" y="292" width="100" height="36"/>
+      <text x="90" y="308">Access SW</text>
+      <text x="90" y="322" style="font-size:9px">×88</text>
+    </g>
+    <text x="90" y="350" style="font-size:10px;fill:#8a99a8;text-anchor:middle">총 100대</text>
+
+  </svg>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-color" style="background:#b71c1c"></div>방화벽 (Firewall)</div>
+    <div class="legend-item"><div class="legend-color" style="background:#7e57c2"></div>DMZ</div>
+    <div class="legend-item"><div class="legend-color" style="background:#42a5f5"></div>업무시스템</div>
+    <div class="legend-item"><div class="legend-color" style="background:#ffa726"></div>개발</div>
+    <div class="legend-item"><div class="legend-color" style="background:#ef5350"></div>DB</div>
+    <div class="legend-item"><div class="legend-color" style="background:#66bb6a"></div>보안/인프라</div>
+    <div class="legend-item"><div class="legend-color" style="background:#26a69a"></div>사무실</div>
+    <div class="legend-item"><div class="legend-color" style="background:#455a64"></div>네트워크 스위치</div>
+  </div>
+
+  <h2>방화벽 룰 샘플 (CMDB Seed Data)</h2>
+  <table class="rules">
+    <thead>
+      <tr><th>방화벽</th><th>Source</th><th>Destination</th><th>Port</th><th>Protocol</th><th>상태</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>FW-DMZ-01</td><td>Internet</td><td>10.40.1.0/24</td><td>80, 443</td><td>TCP</td><td><span class="badge-allow">ALLOW</span></td></tr>
+      <tr><td>FW-DMZ-01</td><td>Internet</td><td>10.40.1.0/24</td><td>22</td><td>TCP</td><td><span class="badge-block">BLOCK</span></td></tr>
+      <tr><td>FW-BIZ-01</td><td>10.10.0.0/16 (사무실)</td><td>10.30.1.0/24 (업무)</td><td>80, 443</td><td>TCP</td><td><span class="badge-allow">ALLOW</span></td></tr>
+      <tr><td>FW-BIZ-01</td><td>10.10.0.0/16 (사무실)</td><td>10.30.1.0/24 (업무)</td><td>22</td><td>TCP</td><td><span class="badge-block">BLOCK</span></td></tr>
+      <tr><td>FW-BIZ-01</td><td>10.40.1.0/24 (DMZ)</td><td>10.30.1.0/24 (업무)</td><td>8080</td><td>TCP</td><td><span class="badge-allow">ALLOW</span></td></tr>
+      <tr><td>FW-DB-01</td><td>10.30.1.0/24 (업무)</td><td>10.50.1.0/24 (DB)</td><td>1521, 3306</td><td>TCP</td><td><span class="badge-allow">ALLOW</span></td></tr>
+      <tr><td>FW-DB-01</td><td>10.10.0.0/16 (사무실)</td><td>10.50.1.0/24 (DB)</td><td>ANY</td><td>ANY</td><td><span class="badge-block">BLOCK</span></td></tr>
+      <tr><td>FW-DB-01</td><td>10.20.1.0/24 (개발)</td><td>10.50.1.0/24 (DB)</td><td>3306, 27017</td><td>TCP</td><td><span class="badge-allow">ALLOW</span></td></tr>
+      <tr><td>FW-DEV-01</td><td>10.10.0.0/16 (사무실)</td><td>10.20.1.0/24 (개발)</td><td>22, 80, 443</td><td>TCP</td><td><span class="badge-allow">ALLOW</span></td></tr>
+      <tr><td>FW-SEC-01</td><td>10.30.1.0/24 (업무)</td><td>10.30.2.0/24 (보안)</td><td>ANY</td><td>ANY</td><td><span class="badge-block">BLOCK</span></td></tr>
+      <tr><td>FW-SEC-01</td><td>10.30.3.0/24 (인프라)</td><td>ALL</td><td>161, ICMP</td><td>UDP/ICMP</td><td><span class="badge-allow">ALLOW</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+  const tooltip = document.getElementById('tooltip');
+
+  document.querySelectorAll('.system').forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const name = el.dataset.name;
+      const ip = el.dataset.ip;
+      const desc = el.dataset.desc;
+      tooltip.innerHTML = `<strong>${name}</strong><br>IP: ${ip}<br>${desc}`;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (e.clientX + 14) + 'px';
+      tooltip.style.top  = (e.clientY + 14) + 'px';
+    });
+    el.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+  });
+
+  document.querySelectorAll('.firewall').forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const name = el.dataset.name;
+      const zone = el.dataset.zone;
+      tooltip.innerHTML = `<strong>🔥 ${name}</strong><br>경계: ${zone}`;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (e.clientX + 14) + 'px';
+      tooltip.style.top  = (e.clientY + 14) + 'px';
+    });
+    el.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+  });
+</script>
+</body>
+</html>
