@@ -73,8 +73,11 @@ export interface CsrFormInput {
   impact:          Impact
 }
 
+export type CsrStatus = 'received' | 'reviewing' | 'in_progress' | 'completed' | 'rejected'
+
 export interface CsrSubmission extends CsrFormInput {
   id:           string        // CSR-YYYYMMDD-NNNN
   rules:        RuleInput[]   // 신청 대상 룰들
   created_at:   string        // ISO timestamp
+  status?:      CsrStatus     // 서버에서 진행상태 (없으면 'received'로 간주)
 }

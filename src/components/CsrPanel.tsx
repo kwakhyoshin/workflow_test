@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import type { CsrFormInput, CsrSubmission, RuleInput } from '../types'
 import { submitCsr } from '../lib/csr'
 
@@ -94,10 +95,16 @@ export function CsrPanel({ open, rulesForRequest, onClose }: Props) {
             <SumRow label="포함 룰" value={`${result.rules.length}건`} />
           </div>
         </div>
-        <div className="px-6 py-4 border-t border-zinc-200 dark:border-white/[0.06] bg-zinc-50/50 dark:bg-black/20 flex justify-end">
-          <button onClick={onClose} className="btn-primary px-6 py-2 text-xs rounded-md tracking-wide">
+        <div className="px-6 py-4 border-t border-zinc-200 dark:border-white/[0.06] bg-zinc-50/50 dark:bg-black/20 flex items-center justify-between">
+          <button onClick={onClose} className="btn-secondary px-3 py-1.5 text-xs font-medium rounded-md">
             닫기
           </button>
+          <Link
+            to={`/csr/${encodeURIComponent(result.id)}`}
+            className="btn-primary px-6 py-2 text-xs rounded-md tracking-wide inline-flex items-center gap-1.5"
+          >
+            CSR 시스템에서 확인하기 <span>→</span>
+          </Link>
         </div>
       </section>
     )
