@@ -123,10 +123,22 @@ export function RuleTable() {
                 <tr className="border-b border-zinc-100 dark:border-white/[0.04] hover:bg-zinc-50/40 dark:hover:bg-white/[0.015] transition align-top">
                   <td className="px-5 py-4 mono text-zinc-400 dark:text-zinc-500 text-xs">{String(idx + 1).padStart(2, '0')}</td>
                   <td className="px-3 py-3">
-                    <IpInput value={r.src_ip} onChange={(v) => update(r.id, { src_ip: v })} />
+                    <IpInput
+                      value={r.src_ip}
+                      onChange={(v) => update(r.id, { src_ip: v })}
+                      systems={topo?.systems}
+                      zones={topo?.zones}
+                      farms={topo?.farms}
+                    />
                   </td>
                   <td className="px-3 py-3">
-                    <IpInput value={r.dst_ip} onChange={(v) => update(r.id, { dst_ip: v })} />
+                    <IpInput
+                      value={r.dst_ip}
+                      onChange={(v) => update(r.id, { dst_ip: v })}
+                      systems={topo?.systems}
+                      zones={topo?.zones}
+                      farms={topo?.farms}
+                    />
                   </td>
                   <td className="px-3 py-3">
                     <input
