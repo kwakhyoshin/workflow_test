@@ -4,9 +4,9 @@ import { deriveStatus, listCsrRequests, STATUS_META } from '../lib/csr'
 import type { CsrStatus, CsrSubmission } from '../types'
 
 const IMPACT_META = {
-  urgent: { label: '긴급', cls: 'bg-rose-100   dark:bg-rose-500/15   text-rose-700   dark:text-rose-300' },
-  normal: { label: '보통', cls: 'bg-zinc-100   dark:bg-white/[0.06]  text-zinc-700   dark:text-zinc-300' },
-  low:    { label: '낮음', cls: 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300' },
+  urgent: { label: '긴급', cls: 'bg-rose-100    dark:bg-rose-500/25    text-rose-700    dark:text-rose-100   ring-1 ring-rose-200   dark:ring-rose-400/40' },
+  normal: { label: '보통', cls: 'bg-zinc-100    dark:bg-white/[0.12]   text-zinc-700    dark:text-zinc-100   ring-1 ring-zinc-200   dark:ring-white/[0.20]' },
+  low:    { label: '낮음', cls: 'bg-emerald-100 dark:bg-emerald-500/25 text-emerald-700 dark:text-emerald-100 ring-1 ring-emerald-200 dark:ring-emerald-400/40' },
 } as const
 
 export default function CsrListPage() {
@@ -53,7 +53,7 @@ export default function CsrListPage() {
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
           CSR 신청 목록
         </h1>
-        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400 max-w-2xl">
+        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300 max-w-2xl">
           제출된 모든 CSR 신청 건이 여기에 표시됩니다. 카드를 클릭하면 상세 진행 상황을 확인할 수 있습니다.
         </p>
       </header>
@@ -82,33 +82,33 @@ export default function CsrListPage() {
       {/* List */}
       <div className="glass rounded-2xl overflow-hidden">
         {error && (
-          <div className="px-6 py-4 text-sm text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-500/10">
+          <div className="px-6 py-4 text-sm text-rose-700 dark:text-rose-200 bg-rose-50 dark:bg-rose-500/15">
             로드 실패: {error}
           </div>
         )}
         {!items && !error && (
-          <div className="px-6 py-16 text-center text-sm text-zinc-500 dark:text-zinc-400">
+          <div className="px-6 py-16 text-center text-sm text-zinc-500 dark:text-zinc-300">
             <span className="inline-flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-amber-500 dark:bg-amber-400 dot-pulse" />
+              <span className="w-2 h-2 rounded-full bg-amber-500 dark:bg-amber-300 dot-pulse" />
               불러오는 중…
             </span>
           </div>
         )}
         {items && filtered.length === 0 && (
-          <div className="px-6 py-16 text-center text-sm text-zinc-500 dark:text-zinc-400">
+          <div className="px-6 py-16 text-center text-sm text-zinc-500 dark:text-zinc-300">
             {items.length === 0 ? '아직 제출된 CSR이 없습니다. 신청 페이지에서 첫 CSR을 제출해 보세요.' : '필터에 해당하는 항목이 없습니다.'}
           </div>
         )}
         {items && filtered.length > 0 && (
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-zinc-500 dark:text-zinc-400 text-[10px] uppercase tracking-widest border-b border-zinc-200 dark:border-white/[0.05]">
-                <th className="px-5 py-3 text-left font-medium">CSR ID</th>
-                <th className="px-3 py-3 text-left font-medium">요청자 / 부서</th>
-                <th className="px-3 py-3 text-left font-medium">신청일</th>
-                <th className="px-3 py-3 text-left font-medium">영향도</th>
-                <th className="px-3 py-3 text-left font-medium">룰</th>
-                <th className="px-3 py-3 text-left font-medium">상태</th>
+              <tr className="text-zinc-600 dark:text-zinc-200 text-[10px] uppercase tracking-widest border-b border-zinc-200 dark:border-white/[0.15] bg-zinc-50/60 dark:bg-white/[0.03]">
+                <th className="px-5 py-3 text-left font-semibold">CSR ID</th>
+                <th className="px-3 py-3 text-left font-semibold">요청자 / 부서</th>
+                <th className="px-3 py-3 text-left font-semibold">신청일</th>
+                <th className="px-3 py-3 text-left font-semibold">영향도</th>
+                <th className="px-3 py-3 text-left font-semibold">룰</th>
+                <th className="px-3 py-3 text-left font-semibold">상태</th>
               </tr>
             </thead>
             <tbody>
@@ -117,21 +117,21 @@ export default function CsrListPage() {
                 const sm = STATUS_META[s]
                 const im = IMPACT_META[it.impact]
                 return (
-                  <tr key={it.id} className="border-b border-zinc-100 dark:border-white/[0.04] last:border-none hover:bg-cyan-50/40 dark:hover:bg-cyan-500/5 transition">
+                  <tr key={it.id} className="border-b border-zinc-100 dark:border-white/[0.10] last:border-none hover:bg-cyan-50/60 dark:hover:bg-cyan-500/10 transition">
                     <td className="px-5 py-3.5">
-                      <Link to={`/csr/${encodeURIComponent(it.id)}`} className="mono text-sm font-semibold text-cyan-700 dark:text-cyan-300 hover:underline">
+                      <Link to={`/csr/${encodeURIComponent(it.id)}`} className="mono text-sm font-semibold text-cyan-700 dark:text-cyan-200 hover:underline">
                         {it.id}
                       </Link>
                     </td>
                     <td className="px-3 py-3.5">
-                      <div className="text-sm text-zinc-800 dark:text-zinc-200">{it.requester_name} <span className="text-zinc-400 dark:text-zinc-500 text-xs mono ml-1">({it.employee_id})</span></div>
-                      <div className="text-xs text-zinc-500 dark:text-zinc-400">{it.department}</div>
+                      <div className="text-sm text-zinc-800 dark:text-zinc-50">{it.requester_name} <span className="text-zinc-500 dark:text-zinc-300 text-xs mono ml-1">({it.employee_id})</span></div>
+                      <div className="text-xs text-zinc-600 dark:text-zinc-300">{it.department}</div>
                     </td>
-                    <td className="px-3 py-3.5 mono text-xs text-zinc-600 dark:text-zinc-400">{fmtDate(it.created_at)}</td>
+                    <td className="px-3 py-3.5 mono text-xs text-zinc-700 dark:text-zinc-200">{fmtDate(it.created_at)}</td>
                     <td className="px-3 py-3.5">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${im.cls}`}>{im.label}</span>
                     </td>
-                    <td className="px-3 py-3.5 text-xs text-zinc-600 dark:text-zinc-400 mono">{it.rules.length}건</td>
+                    <td className="px-3 py-3.5 text-xs text-zinc-700 dark:text-zinc-200 mono">{it.rules.length}건</td>
                     <td className="px-3 py-3.5">
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold border ${sm.cls}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${sm.dot}`} />
@@ -164,7 +164,7 @@ function Chip({ children, active, onClick, count, tone }: { children: React.Reac
     tone === 'amber'   ? 'bg-amber-500 text-white' :
     tone === 'sky'     ? 'bg-sky-500 text-white' :
     tone === 'emerald' ? 'bg-emerald-500 text-white' :
-    tone === 'zinc'    ? 'bg-zinc-700 dark:bg-zinc-300 text-white dark:text-zinc-900' :
+    tone === 'zinc'    ? 'bg-zinc-700 dark:bg-zinc-200 text-white dark:text-zinc-900' :
                          'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900'
   return (
     <button
@@ -173,11 +173,11 @@ function Chip({ children, active, onClick, count, tone }: { children: React.Reac
         'px-3 py-1.5 text-xs font-medium rounded-md border transition flex items-center gap-1.5 ' +
         (active
           ? activeCls + ' border-transparent'
-          : 'bg-white dark:bg-white/[0.04] text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-white/[0.10] hover:border-zinc-400 dark:hover:border-white/[0.20]')
+          : 'bg-white dark:bg-white/[0.08] text-zinc-700 dark:text-zinc-200 border-zinc-200 dark:border-white/[0.20] hover:border-zinc-400 dark:hover:border-white/[0.30]')
       }
     >
       {children}
-      <span className={'text-[10px] mono ' + (active ? 'opacity-80' : 'text-zinc-400 dark:text-zinc-500')}>
+      <span className={'text-[10px] mono ' + (active ? 'opacity-90' : 'text-zinc-500 dark:text-zinc-300')}>
         {count}
       </span>
     </button>

@@ -2,13 +2,13 @@ import type { JudgmentResult } from '../lib/judge'
 
 // 각 zone에 대해 색상 톤 매핑 (네트워크 구성도 색상과 통일)
 const ZONE_TONE: Record<string, { bg: string; ring: string; text: string }> = {
-  'zone-dmz':    { bg: 'from-violet-500/20 to-violet-500/5',   ring: 'ring-violet-500/40',  text: 'text-violet-700 dark:text-violet-300' },
-  'zone-biz':    { bg: 'from-sky-500/20    to-sky-500/5',      ring: 'ring-sky-500/40',     text: 'text-sky-700    dark:text-sky-300' },
-  'zone-office': { bg: 'from-teal-500/20   to-teal-500/5',     ring: 'ring-teal-500/40',    text: 'text-teal-700   dark:text-teal-300' },
-  'zone-dev':    { bg: 'from-amber-500/20  to-amber-500/5',    ring: 'ring-amber-500/40',   text: 'text-amber-700  dark:text-amber-300' },
-  'zone-db':     { bg: 'from-rose-500/20   to-rose-500/5',     ring: 'ring-rose-500/40',    text: 'text-rose-700   dark:text-rose-300' },
-  'zone-sec':    { bg: 'from-emerald-500/20 to-emerald-500/5', ring: 'ring-emerald-500/40', text: 'text-emerald-700 dark:text-emerald-300' },
-  'zone-infra':  { bg: 'from-lime-500/20   to-lime-500/5',     ring: 'ring-lime-500/40',    text: 'text-lime-700   dark:text-lime-300' },
+  'zone-dmz':    { bg: 'from-violet-500/25  to-violet-500/10  dark:from-violet-500/30  dark:to-violet-500/15',  ring: 'ring-violet-500/50  dark:ring-violet-400/60',  text: 'text-violet-700  dark:text-violet-200' },
+  'zone-biz':    { bg: 'from-sky-500/25     to-sky-500/10     dark:from-sky-500/30     dark:to-sky-500/15',     ring: 'ring-sky-500/50     dark:ring-sky-400/60',     text: 'text-sky-700     dark:text-sky-200' },
+  'zone-office': { bg: 'from-teal-500/25    to-teal-500/10    dark:from-teal-500/30    dark:to-teal-500/15',    ring: 'ring-teal-500/50    dark:ring-teal-400/60',    text: 'text-teal-700    dark:text-teal-200' },
+  'zone-dev':    { bg: 'from-amber-500/25   to-amber-500/10   dark:from-amber-500/30   dark:to-amber-500/15',   ring: 'ring-amber-500/50   dark:ring-amber-400/60',   text: 'text-amber-700   dark:text-amber-200' },
+  'zone-db':     { bg: 'from-rose-500/25    to-rose-500/10    dark:from-rose-500/30    dark:to-rose-500/15',    ring: 'ring-rose-500/50    dark:ring-rose-400/60',    text: 'text-rose-700    dark:text-rose-200' },
+  'zone-sec':    { bg: 'from-emerald-500/25 to-emerald-500/10 dark:from-emerald-500/30 dark:to-emerald-500/15', ring: 'ring-emerald-500/50 dark:ring-emerald-400/60', text: 'text-emerald-700 dark:text-emerald-200' },
+  'zone-infra':  { bg: 'from-lime-500/25    to-lime-500/10    dark:from-lime-500/30    dark:to-lime-500/15',    ring: 'ring-lime-500/50    dark:ring-lime-400/60',    text: 'text-lime-700    dark:text-lime-200' },
 }
 
 function zoneTone(id: string | undefined) {
@@ -117,11 +117,11 @@ function EndpointNode({
   return (
     <div className="flex flex-col items-center min-w-[110px]">
       {label && (
-        <div className="text-[9px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">
+        <div className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 dark:text-zinc-300 mb-1">
           {label}
         </div>
       )}
-      <div className={`relative w-[100px] rounded-lg bg-gradient-to-b ${tone.bg} ring-1 ${tone.ring} px-2.5 py-2 shadow-sm`}>
+      <div className={`relative w-[100px] rounded-lg bg-gradient-to-b ${tone.bg} ring-2 ${tone.ring} px-2.5 py-2 shadow-sm`}>
         <div className={`text-[10px] uppercase tracking-wider font-semibold ${tone.text} text-center`}>
           {subtitle || '—'}
         </div>
@@ -153,9 +153,9 @@ function FirewallNode({
   name, description, status,
 }: { name: string; description: string; status: 'ok' | 'block' | 'dimmed' }) {
   const cfg = {
-    ok:      { ring: 'ring-emerald-500/50', bg: 'bg-emerald-500/10 dark:bg-emerald-500/15', text: 'text-emerald-700 dark:text-emerald-300', icon: '✓',  badge: '허용', badgeCls: 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300' },
-    block:   { ring: 'ring-rose-500/60',    bg: 'bg-rose-500/15    dark:bg-rose-500/20',    text: 'text-rose-700    dark:text-rose-300',    icon: '🔥', badge: '신청 필요', badgeCls: 'bg-rose-500/25 text-rose-700 dark:text-rose-200' },
-    dimmed:  { ring: 'ring-zinc-300 dark:ring-white/10', bg: 'bg-zinc-100 dark:bg-white/[0.03]', text: 'text-zinc-400 dark:text-zinc-600', icon: '·',  badge: '미도달', badgeCls: 'bg-zinc-200 dark:bg-white/[0.05] text-zinc-500 dark:text-zinc-500' },
+    ok:      { ring: 'ring-emerald-500/60 dark:ring-emerald-400/70', bg: 'bg-emerald-500/15 dark:bg-emerald-500/25', text: 'text-emerald-700 dark:text-emerald-100', icon: '✓',  badge: '허용',     badgeCls: 'bg-emerald-500/25 dark:bg-emerald-500/30 text-emerald-700 dark:text-emerald-100' },
+    block:   { ring: 'ring-rose-500/70    dark:ring-rose-400/80',    bg: 'bg-rose-500/20    dark:bg-rose-500/30',    text: 'text-rose-700    dark:text-rose-100',    icon: '🔥', badge: '신청 필요', badgeCls: 'bg-rose-500/30   dark:bg-rose-500/35   text-rose-700   dark:text-rose-100' },
+    dimmed:  { ring: 'ring-zinc-300       dark:ring-white/15',       bg: 'bg-zinc-100       dark:bg-white/[0.06]',   text: 'text-zinc-500    dark:text-zinc-400',    icon: '·',  badge: '미도달',    badgeCls: 'bg-zinc-200      dark:bg-white/[0.08]  text-zinc-500   dark:text-zinc-300' },
   }[status]
   return (
     <div className="flex flex-col items-center min-w-[110px]">
@@ -175,9 +175,9 @@ function FirewallNode({
 
 function Connector({ status }: { status: 'ok' | 'block' | 'dimmed' }) {
   const cfg = {
-    ok:     { line: 'bg-emerald-500/60 dark:bg-emerald-400/60', arrow: 'border-l-emerald-500/60 dark:border-l-emerald-400/60' },
-    block:  { line: 'bg-rose-500/70    dark:bg-rose-400/70',    arrow: 'border-l-rose-500/70    dark:border-l-rose-400/70' },
-    dimmed: { line: 'bg-zinc-300       dark:bg-white/10',       arrow: 'border-l-zinc-300       dark:border-l-white/10' },
+    ok:     { line: 'bg-emerald-500/70 dark:bg-emerald-400/80', arrow: 'border-l-emerald-500/70 dark:border-l-emerald-400/80' },
+    block:  { line: 'bg-rose-500/80    dark:bg-rose-400/90',    arrow: 'border-l-rose-500/80    dark:border-l-rose-400/90' },
+    dimmed: { line: 'bg-zinc-300       dark:bg-white/20',       arrow: 'border-l-zinc-300       dark:border-l-white/20' },
   }[status]
   return (
     <div className="flex items-center self-center mt-4">

@@ -9,7 +9,7 @@ export function Layout() {
       <div className="absolute inset-0 pointer-events-none hero-grid" />
 
       {/* ── Top nav ──────────────────────────────────────── */}
-      <nav className="relative z-10 border-b border-zinc-200 dark:border-white/[0.06]">
+      <nav className="relative z-10 border-b border-zinc-200 dark:border-white/[0.14]">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-5">
             <Link to="/" className="flex items-center gap-2.5">
@@ -24,7 +24,7 @@ export function Layout() {
               </span>
             </Link>
 
-            <div className="hidden sm:flex items-center gap-1 ml-3 pl-3 border-l border-zinc-200 dark:border-white/[0.08]">
+            <div className="hidden sm:flex items-center gap-1 ml-3 pl-3 border-l border-zinc-200 dark:border-white/[0.18]">
               <NavTab to="/" end>신청</NavTab>
               <NavTab to="/csr">CSR 시스템</NavTab>
             </div>
@@ -51,8 +51,8 @@ export function Layout() {
       </div>
 
       {/* ── Footer ───────────────────────────────────────── */}
-      <footer className="relative z-10 border-t border-zinc-200 dark:border-white/[0.05]">
-        <div className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-600 font-mono">
+      <footer className="relative z-10 border-t border-zinc-200 dark:border-white/[0.12]">
+        <div className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-300 font-mono">
           <span>kwakhyoshin/workflow_test</span>
           <span>built on firestore · react · vite</span>
         </div>
@@ -70,7 +70,7 @@ function NavTab({ to, end, children }: { to: string; end?: boolean; children: Re
         'px-3 py-1.5 text-xs font-medium rounded-md transition ' +
         (isActive
           ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900'
-          : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-white/[0.05]')
+          : 'text-zinc-600 dark:text-zinc-200 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-white/[0.10]')
       }
     >
       {children}

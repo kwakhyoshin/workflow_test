@@ -61,7 +61,7 @@ export function IpInput({ value, onChange, placeholder, systems, zones, farms }:
           <button
             type="button"
             onClick={() => setPickerOpen(true)}
-            className="w-9 h-9 flex items-center justify-center rounded-md text-zinc-500 dark:text-zinc-400 bg-white dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.10] hover:text-cyan-700 dark:hover:text-cyan-300 hover:border-cyan-300 dark:hover:border-cyan-500/40 hover:bg-cyan-50/60 dark:hover:bg-cyan-500/10 transition"
+            className="w-9 h-9 flex items-center justify-center rounded-md text-zinc-600 dark:text-zinc-200 bg-white dark:bg-white/[0.08] border border-zinc-200 dark:border-white/[0.20] hover:text-cyan-700 dark:hover:text-cyan-200 hover:border-cyan-300 dark:hover:border-cyan-400/60 hover:bg-cyan-50/60 dark:hover:bg-cyan-500/15 transition"
             title="시스템 목록에서 선택"
             aria-label="시스템 선택"
           >
@@ -75,12 +75,12 @@ export function IpInput({ value, onChange, placeholder, systems, zones, farms }:
         )}
       </div>
       <div className="mt-1.5 min-h-[18px] text-[11px] tracking-tight font-medium">
-        {state.kind === 'idle'      && <span className="text-zinc-400 dark:text-zinc-600">—</span>}
-        {state.kind === 'invalid'   && <span className="text-amber-600 dark:text-amber-400">⚠ IP 형식 오류</span>}
-        {state.kind === 'loading'   && <span className="text-zinc-500 dark:text-zinc-400">조회중…</span>}
-        {state.kind === 'not_found' && <span className="text-zinc-500 dark:text-zinc-400">CMDB 미등록</span>}
+        {state.kind === 'idle'      && <span className="text-zinc-400 dark:text-zinc-500">—</span>}
+        {state.kind === 'invalid'   && <span className="text-amber-600 dark:text-amber-300">⚠ IP 형식 오류</span>}
+        {state.kind === 'loading'   && <span className="text-zinc-500 dark:text-zinc-300">조회중…</span>}
+        {state.kind === 'not_found' && <span className="text-zinc-500 dark:text-zinc-300">CMDB 미등록</span>}
         {state.kind === 'found'     && (
-          <span className="text-cyan-700 dark:text-cyan-300" title={state.system.description}>
+          <span className="text-cyan-700 dark:text-cyan-200" title={state.system.description}>
             <span className="mr-1">●</span>{state.system.name}
           </span>
         )}

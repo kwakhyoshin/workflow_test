@@ -68,9 +68,9 @@ export function deriveStatus(submission: CsrSubmission): CsrStatus {
 }
 
 export const STATUS_META: Record<CsrStatus, { label: string; cls: string; dot: string; order: number }> = {
-  received:    { label: '접수됨',   cls: 'bg-zinc-100    dark:bg-white/[0.05]   text-zinc-700    dark:text-zinc-300    border-zinc-200    dark:border-white/[0.10]',  dot: 'bg-zinc-400    dark:bg-zinc-500',    order: 1 },
-  reviewing:   { label: '검토 중',  cls: 'bg-amber-50    dark:bg-amber-500/10   text-amber-700   dark:text-amber-300   border-amber-200   dark:border-amber-500/30',   dot: 'bg-amber-500   dark:bg-amber-400',   order: 2 },
-  in_progress: { label: '처리 중',  cls: 'bg-sky-50      dark:bg-sky-500/10     text-sky-700     dark:text-sky-300     border-sky-200     dark:border-sky-500/30',     dot: 'bg-sky-500     dark:bg-sky-400',     order: 3 },
-  completed:   { label: '완료',     cls: 'bg-emerald-50  dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/30', dot: 'bg-emerald-500 dark:bg-emerald-400', order: 4 },
-  rejected:    { label: '반려',     cls: 'bg-rose-50     dark:bg-rose-500/10    text-rose-700    dark:text-rose-300    border-rose-200    dark:border-rose-500/30',    dot: 'bg-rose-500    dark:bg-rose-400',    order: 0 },
+  received:    { label: '접수됨',   cls: 'bg-zinc-100    dark:bg-white/[0.10]   text-zinc-700    dark:text-zinc-100    border-zinc-200    dark:border-white/[0.25]',   dot: 'bg-zinc-400    dark:bg-zinc-300',    order: 1 },
+  reviewing:   { label: '검토 중',  cls: 'bg-amber-50    dark:bg-amber-500/20   text-amber-700   dark:text-amber-200   border-amber-200   dark:border-amber-400/60',   dot: 'bg-amber-500   dark:bg-amber-300',   order: 2 },
+  in_progress: { label: '처리 중',  cls: 'bg-sky-50      dark:bg-sky-500/20     text-sky-700     dark:text-sky-200     border-sky-200     dark:border-sky-400/60',     dot: 'bg-sky-500     dark:bg-sky-300',     order: 3 },
+  completed:   { label: '완료',     cls: 'bg-emerald-50  dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-200 border-emerald-200 dark:border-emerald-400/60', dot: 'bg-emerald-500 dark:bg-emerald-300', order: 4 },
+  rejected:    { label: '반려',     cls: 'bg-rose-50     dark:bg-rose-500/20    text-rose-700    dark:text-rose-200    border-rose-200    dark:border-rose-400/60',    dot: 'bg-rose-500    dark:bg-rose-300',    order: 0 },
 }

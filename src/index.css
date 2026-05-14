@@ -23,20 +23,20 @@
 }
 
 .dark {
-  /* DARK — gray-toned (not pure black) */
+  /* DARK — gray-toned, higher contrast for readability */
   --bg-base:        #1c1c22;
-  --bg-surface:     rgba(255, 255, 255, 0.035);
-  --bg-elevated:    rgba(255, 255, 255, 0.06);
-  --border-subtle:  rgba(255, 255, 255, 0.08);
-  --border-default: rgba(255, 255, 255, 0.14);
+  --bg-surface:     rgba(255, 255, 255, 0.055);
+  --bg-elevated:    rgba(255, 255, 255, 0.09);
+  --border-subtle:  rgba(255, 255, 255, 0.14);
+  --border-default: rgba(255, 255, 255, 0.22);
   --text-primary:   #fafafa;
-  --text-secondary: #d4d4d8;
-  --text-tertiary:  #a1a1aa;
-  --text-muted:     #71717a;
-  --grid-line:      rgba(255, 255, 255, 0.05);
-  --glow-cyan:      rgba(34, 211, 238, 0.20);
-  --glow-violet:    rgba(167, 139, 250, 0.20);
-  --glow-blue:      rgba(59, 130, 246, 0.10);
+  --text-secondary: #e4e4e7;
+  --text-tertiary:  #b8b8be;
+  --text-muted:     #8a8a93;
+  --grid-line:      rgba(255, 255, 255, 0.07);
+  --glow-cyan:      rgba(34, 211, 238, 0.22);
+  --glow-violet:    rgba(167, 139, 250, 0.22);
+  --glow-blue:      rgba(59, 130, 246, 0.12);
 }
 
 /* ── Base ───────────────────────────────────────────────────── */
@@ -113,11 +113,12 @@ body {
 }
 .dark .glass {
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%),
-    rgba(255, 255, 255, 0.025);
+    linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.025) 100%),
+    rgba(40, 40, 48, 0.85);
+  border-color: rgba(255, 255, 255, 0.14);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.05) inset,
-    0 24px 60px -20px rgba(0, 0, 0, 0.5);
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 24px 60px -20px rgba(0, 0, 0, 0.6);
 }
 
 /* ── Buttons ────────────────────────────────────────────────── */
@@ -159,12 +160,12 @@ body {
   border-color: var(--text-tertiary);
 }
 .dark .btn-secondary {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 .dark .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.28);
 }
 
 /* ── Inputs ─────────────────────────────────────────────────── */
@@ -187,14 +188,16 @@ body {
   cursor: not-allowed;
 }
 .dark .input-themed {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.10);
-}
-.dark .input-themed:hover { border-color: rgba(255, 255, 255, 0.20); }
-.dark .input-themed:focus {
   background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(34, 211, 238, 0.6);
-  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.18);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #fafafa;
+}
+.dark .input-themed::placeholder { color: rgba(255, 255, 255, 0.40); }
+.dark .input-themed:hover { border-color: rgba(255, 255, 255, 0.30); }
+.dark .input-themed:focus {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(34, 211, 238, 0.7);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.22);
 }
 
 /* ── Dot pulse ──────────────────────────────────────────────── */

@@ -69,30 +69,30 @@ export function RuleTable() {
     <>
     <div className="glass rounded-2xl overflow-hidden">
       {/* Card header */}
-      <div className="px-6 py-4 border-b border-zinc-200 dark:border-white/[0.06] flex items-center justify-between">
+      <div className="px-6 py-4 border-b border-zinc-200 dark:border-white/[0.14] flex items-center justify-between">
         <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest">
-          <span className="text-zinc-400 dark:text-zinc-500">Status</span>
+          <span className="text-zinc-500 dark:text-zinc-300">Status</span>
           {topoError ? (
-            <span className="text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 dark:bg-rose-400" />
+            <span className="text-rose-600 dark:text-rose-300 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 dark:bg-rose-300" />
               error
             </span>
           ) : !topo ? (
-            <span className="text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400 dot-pulse" />
+            <span className="text-amber-600 dark:text-amber-300 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-300 dot-pulse" />
               loading topology
             </span>
           ) : (
-            <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
+            <span className="text-emerald-600 dark:text-emerald-300 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-300" />
               ready
             </span>
           )}
         </div>
-        <div className="text-[11px] text-zinc-500 dark:text-zinc-400">
+        <div className="text-[11px] text-zinc-600 dark:text-zinc-200">
           {rules.length} rule{rules.length !== 1 && 's'}
           {evaluated && (
-            <span className="ml-2 text-zinc-400 dark:text-zinc-500">·  {Object.keys(results).length} evaluated</span>
+            <span className="ml-2 text-zinc-500 dark:text-zinc-400">·  {Object.keys(results).length} evaluated</span>
           )}
         </div>
       </div>
@@ -105,13 +105,13 @@ export function RuleTable() {
 
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-widest border-b border-zinc-200 dark:border-white/[0.05]">
-            <th className="px-5 py-3 text-left w-12 font-medium">#</th>
-            <th className="px-3 py-3 text-left font-medium">Source IP</th>
-            <th className="px-3 py-3 text-left font-medium">Destination IP</th>
-            <th className="px-3 py-3 text-left font-medium">Port</th>
-            <th className="px-3 py-3 text-left font-medium">Protocol</th>
-            <th className="px-3 py-3 text-left font-medium">Result</th>
+          <tr className="text-zinc-600 dark:text-zinc-200 text-[10px] uppercase tracking-widest border-b border-zinc-200 dark:border-white/[0.15] bg-zinc-50/40 dark:bg-white/[0.03]">
+            <th className="px-5 py-3 text-left w-12 font-semibold">#</th>
+            <th className="px-3 py-3 text-left font-semibold">Source IP</th>
+            <th className="px-3 py-3 text-left font-semibold">Destination IP</th>
+            <th className="px-3 py-3 text-left font-semibold">Port</th>
+            <th className="px-3 py-3 text-left font-semibold">Protocol</th>
+            <th className="px-3 py-3 text-left font-semibold">Result</th>
             <th className="px-3 py-3 w-12"></th>
           </tr>
         </thead>
@@ -120,8 +120,8 @@ export function RuleTable() {
             const result = results[r.id]
             return (
               <Fragment key={r.id}>
-                <tr className="border-b border-zinc-100 dark:border-white/[0.04] hover:bg-zinc-50/40 dark:hover:bg-white/[0.015] transition align-top">
-                  <td className="px-5 py-4 mono text-zinc-400 dark:text-zinc-500 text-xs">{String(idx + 1).padStart(2, '0')}</td>
+                <tr className="border-b border-zinc-100 dark:border-white/[0.10] hover:bg-zinc-50/40 dark:hover:bg-white/[0.05] transition align-top">
+                  <td className="px-5 py-4 mono text-zinc-500 dark:text-zinc-300 text-xs">{String(idx + 1).padStart(2, '0')}</td>
                   <td className="px-3 py-3">
                     <IpInput
                       value={r.src_ip}
@@ -163,13 +163,13 @@ export function RuleTable() {
                     </select>
                   </td>
                   <td className="px-3 py-4">
-                    {result ? <ResultBadge result={result} /> : <span className="text-xs text-zinc-300 dark:text-zinc-700">—</span>}
+                    {result ? <ResultBadge result={result} /> : <span className="text-xs text-zinc-400 dark:text-zinc-500">—</span>}
                   </td>
                   <td className="px-3 py-4">
                     <button
                       onClick={() => remove(r.id)}
                       disabled={rules.length <= 1}
-                      className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-rose-600 dark:text-zinc-500 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 disabled:text-zinc-300 dark:disabled:text-zinc-700 disabled:hover:bg-transparent disabled:cursor-not-allowed rounded transition"
+                      className="w-7 h-7 flex items-center justify-center text-zinc-500 hover:text-rose-600 dark:text-zinc-300 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/15 disabled:text-zinc-300 dark:disabled:text-zinc-600 disabled:hover:bg-transparent disabled:cursor-not-allowed rounded transition"
                       title="이 룰 삭제"
                     >
                       ✕
@@ -177,7 +177,7 @@ export function RuleTable() {
                   </td>
                 </tr>
                 {result && (
-                  <tr className="bg-zinc-50/60 dark:bg-white/[0.015] border-b border-zinc-100 dark:border-white/[0.04]">
+                  <tr className="bg-zinc-50/60 dark:bg-white/[0.04] border-b border-zinc-100 dark:border-white/[0.10]">
                     <td></td>
                     <td colSpan={6} className="px-3 py-4">
                       <ResultDetail result={result} />
@@ -190,7 +190,7 @@ export function RuleTable() {
         </tbody>
       </table>
 
-      <div className="px-5 py-4 border-t border-zinc-200 dark:border-white/[0.06] bg-zinc-50/60 dark:bg-black/30 flex items-center justify-between">
+      <div className="px-5 py-4 border-t border-zinc-200 dark:border-white/[0.14] bg-zinc-50/60 dark:bg-black/30 flex items-center justify-between">
         <button onClick={add} className="btn-secondary px-3 py-1.5 text-xs font-medium rounded-md">
           + 룰 추가
         </button>

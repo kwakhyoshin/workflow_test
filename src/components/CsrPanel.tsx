@@ -80,13 +80,13 @@ export function CsrPanel({ open, rulesForRequest, onClose }: Props) {
             <span className="text-2xl">✓</span>
           </div>
           <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">CSR 접수 완료</h3>
-          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-200">
             접수 번호로 진행 상황을 추적할 수 있습니다.
           </p>
-          <div className="mt-5 inline-block px-4 py-2 rounded-md bg-zinc-100 dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.10]">
-            <span className="mono text-lg font-semibold text-cyan-700 dark:text-cyan-300">{result.id}</span>
+          <div className="mt-5 inline-block px-4 py-2 rounded-md bg-zinc-100 dark:bg-white/[0.10] border border-zinc-200 dark:border-white/[0.22]">
+            <span className="mono text-lg font-semibold text-cyan-700 dark:text-cyan-200">{result.id}</span>
           </div>
-          <div className="mt-6 text-left text-xs text-zinc-500 dark:text-zinc-400 max-w-md mx-auto space-y-1">
+          <div className="mt-6 text-left text-xs text-zinc-600 dark:text-zinc-200 max-w-md mx-auto space-y-1">
             <SumRow label="요청자" value={`${result.requester_name} (${result.employee_id})`} />
             <SumRow label="부서"   value={result.department} />
             <SumRow label="희망 완료일" value={result.due_date} mono />
@@ -95,7 +95,7 @@ export function CsrPanel({ open, rulesForRequest, onClose }: Props) {
             <SumRow label="포함 룰" value={`${result.rules.length}건`} />
           </div>
         </div>
-        <div className="px-6 py-4 border-t border-zinc-200 dark:border-white/[0.06] bg-zinc-50/50 dark:bg-black/20 flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-zinc-200 dark:border-white/[0.14] bg-zinc-50/50 dark:bg-black/20 flex items-center justify-between">
           <button onClick={onClose} className="btn-secondary px-3 py-1.5 text-xs font-medium rounded-md">
             닫기
           </button>
@@ -113,13 +113,13 @@ export function CsrPanel({ open, rulesForRequest, onClose }: Props) {
   return (
     <section className="glass rounded-2xl overflow-hidden mt-6">
       <form onSubmit={onSubmit}>
-        <div className="px-6 py-4 border-b border-zinc-200 dark:border-white/[0.06] flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-zinc-200 dark:border-white/[0.14] flex items-center justify-between">
           <div>
             <div className="text-[10px] font-mono uppercase tracking-widest text-cyan-600 dark:text-cyan-400 mb-1">
               02 · CSR Request
             </div>
             <h3 className="text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">CSR 신청</h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            <p className="text-xs text-zinc-600 dark:text-zinc-200 mt-1">
               {rulesForRequest.length}건의 룰에 대해 통합 CSR을 생성합니다.
             </p>
           </div>
@@ -218,7 +218,7 @@ export function CsrPanel({ open, rulesForRequest, onClose }: Props) {
           )}
         </div>
 
-        <div className="px-6 py-4 border-t border-zinc-200 dark:border-white/[0.06] bg-zinc-50/50 dark:bg-black/20 flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-zinc-200 dark:border-white/[0.14] bg-zinc-50/50 dark:bg-black/20 flex items-center justify-between">
           <button type="button" onClick={onClose} className="btn-secondary px-3 py-1.5 text-xs font-medium rounded-md">
             취소
           </button>
@@ -234,7 +234,7 @@ export function CsrPanel({ open, rulesForRequest, onClose }: Props) {
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block text-[11px] font-medium text-zinc-600 dark:text-zinc-400 mb-1.5">
+      <span className="block text-[11px] font-semibold text-zinc-600 dark:text-zinc-200 mb-1.5">
         {label}
         {required && <span className="ml-1 text-rose-500">*</span>}
       </span>
@@ -255,7 +255,7 @@ function Radio<T extends string>({
         'px-3 py-1.5 text-xs font-medium rounded-md border transition ' +
         (active
           ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 border-zinc-900 dark:border-white'
-          : 'bg-white dark:bg-white/[0.04] text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-white/[0.10] hover:border-zinc-400 dark:hover:border-white/[0.20]')
+          : 'bg-white dark:bg-white/[0.08] text-zinc-700 dark:text-zinc-100 border-zinc-200 dark:border-white/[0.22] hover:border-zinc-400 dark:hover:border-white/[0.35]')
       }
       aria-pressed={active}
     >
@@ -267,8 +267,8 @@ function Radio<T extends string>({
 function SumRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="flex justify-between">
-      <span>{label}</span>
-      <span className={'text-zinc-800 dark:text-zinc-200 ' + (mono ? 'mono' : '')}>{value}</span>
+      <span className="text-zinc-600 dark:text-zinc-300">{label}</span>
+      <span className={'text-zinc-800 dark:text-zinc-50 font-medium ' + (mono ? 'mono' : '')}>{value}</span>
     </div>
   )
 }

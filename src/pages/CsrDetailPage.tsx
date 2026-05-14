@@ -6,9 +6,9 @@ import type { CsrStatus, CsrSubmission } from '../types'
 const STATUS_ORDER: CsrStatus[] = ['received', 'reviewing', 'in_progress', 'completed']
 
 const IMPACT_META = {
-  urgent: { label: '긴급', cls: 'bg-rose-100   dark:bg-rose-500/15   text-rose-700   dark:text-rose-300   border-rose-200 dark:border-rose-500/30' },
-  normal: { label: '보통', cls: 'bg-zinc-100   dark:bg-white/[0.06]  text-zinc-700   dark:text-zinc-300   border-zinc-200 dark:border-white/[0.10]' },
-  low:    { label: '낮음', cls: 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/30' },
+  urgent: { label: '긴급', cls: 'bg-rose-100    dark:bg-rose-500/25    text-rose-700    dark:text-rose-100    border-rose-200    dark:border-rose-400/60' },
+  normal: { label: '보통', cls: 'bg-zinc-100    dark:bg-white/[0.12]   text-zinc-700    dark:text-zinc-100    border-zinc-200    dark:border-white/[0.25]' },
+  low:    { label: '낮음', cls: 'bg-emerald-100 dark:bg-emerald-500/25 text-emerald-700 dark:text-emerald-100 border-emerald-200 dark:border-emerald-400/60' },
 } as const
 
 export default function CsrDetailPage() {
@@ -28,7 +28,7 @@ export default function CsrDetailPage() {
   return (
     <main className="max-w-6xl mx-auto px-6 pt-16 pb-24">
       <div className="mb-5">
-        <Link to="/csr" className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition">
+        <Link to="/csr" className="text-xs text-zinc-600 dark:text-zinc-300 hover:text-cyan-700 dark:hover:text-cyan-200 transition">
           ← 목록으로
         </Link>
       </div>
@@ -62,11 +62,11 @@ export default function CsrDetailPage() {
               <h1 className="mono text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                 {item.id}
               </h1>
-              <div className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-                <span className="text-zinc-700 dark:text-zinc-200">{item.requester_name}</span>
-                <span className="mx-2 text-zinc-300 dark:text-zinc-600">·</span>
+              <div className="mt-2 text-sm text-zinc-600 dark:text-zinc-200">
+                <span className="text-zinc-800 dark:text-zinc-50">{item.requester_name}</span>
+                <span className="mx-2 text-zinc-400 dark:text-zinc-500">·</span>
                 <span>{item.department}</span>
-                <span className="mx-2 text-zinc-300 dark:text-zinc-600">·</span>
+                <span className="mx-2 text-zinc-400 dark:text-zinc-500">·</span>
                 <span className="mono text-xs">{fmtDate(item.created_at)} 접수</span>
               </div>
             </div>
@@ -75,7 +75,7 @@ export default function CsrDetailPage() {
 
           {/* Status timeline */}
           <section className="glass rounded-2xl px-6 py-5 mb-6">
-            <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-4">
+            <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-600 dark:text-zinc-200 mb-4">
               Progress
             </div>
             <Timeline current={deriveStatus(item)} />
@@ -106,34 +106,34 @@ export default function CsrDetailPage() {
             <section className="glass rounded-2xl p-6 lg:col-span-2 space-y-6">
               <div>
                 <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50 mb-2">요청 사유</h2>
-                <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                <p className="text-sm text-zinc-700 dark:text-zinc-100 leading-relaxed whitespace-pre-wrap">
                   {item.reason}
                 </p>
               </div>
 
               <div>
                 <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
-                  신청 룰 <span className="ml-1.5 text-xs font-normal text-zinc-500 dark:text-zinc-400">({item.rules.length}건)</span>
+                  신청 룰 <span className="ml-1.5 text-xs font-normal text-zinc-600 dark:text-zinc-300">({item.rules.length}건)</span>
                 </h2>
-                <div className="rounded-lg border border-zinc-200 dark:border-white/[0.08] overflow-hidden">
+                <div className="rounded-lg border border-zinc-200 dark:border-white/[0.18] overflow-hidden">
                   <table className="w-full text-xs">
                     <thead>
-                      <tr className="bg-zinc-50/60 dark:bg-white/[0.02] text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
-                        <th className="px-3 py-2 text-left font-medium w-10">#</th>
-                        <th className="px-3 py-2 text-left font-medium">Source</th>
-                        <th className="px-3 py-2 text-left font-medium">Destination</th>
-                        <th className="px-3 py-2 text-left font-medium">Port</th>
-                        <th className="px-3 py-2 text-left font-medium">Protocol</th>
+                      <tr className="bg-zinc-50/60 dark:bg-white/[0.06] text-[10px] uppercase tracking-widest text-zinc-600 dark:text-zinc-200 border-b border-zinc-200 dark:border-white/[0.15]">
+                        <th className="px-3 py-2 text-left font-semibold w-10">#</th>
+                        <th className="px-3 py-2 text-left font-semibold">Source</th>
+                        <th className="px-3 py-2 text-left font-semibold">Destination</th>
+                        <th className="px-3 py-2 text-left font-semibold">Port</th>
+                        <th className="px-3 py-2 text-left font-semibold">Protocol</th>
                       </tr>
                     </thead>
                     <tbody>
                       {item.rules.map((r, i) => (
-                        <tr key={r.id} className="border-t border-zinc-100 dark:border-white/[0.04]">
-                          <td className="px-3 py-2 mono text-zinc-500 dark:text-zinc-400">{String(i+1).padStart(2,'0')}</td>
-                          <td className="px-3 py-2 mono text-zinc-800 dark:text-zinc-200">{r.src_ip}</td>
-                          <td className="px-3 py-2 mono text-zinc-800 dark:text-zinc-200">{r.dst_ip}</td>
-                          <td className="px-3 py-2 mono text-zinc-600 dark:text-zinc-400">{r.port || '—'}</td>
-                          <td className="px-3 py-2 mono text-zinc-600 dark:text-zinc-400">{r.protocol}</td>
+                        <tr key={r.id} className="border-t border-zinc-100 dark:border-white/[0.10]">
+                          <td className="px-3 py-2 mono text-zinc-500 dark:text-zinc-300">{String(i+1).padStart(2,'0')}</td>
+                          <td className="px-3 py-2 mono text-zinc-800 dark:text-zinc-50">{r.src_ip}</td>
+                          <td className="px-3 py-2 mono text-zinc-800 dark:text-zinc-50">{r.dst_ip}</td>
+                          <td className="px-3 py-2 mono text-zinc-700 dark:text-zinc-200">{r.port || '—'}</td>
+                          <td className="px-3 py-2 mono text-zinc-700 dark:text-zinc-200">{r.protocol}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -151,8 +151,8 @@ export default function CsrDetailPage() {
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col">
-      <dt className="text-[10px] uppercase tracking-widest font-medium text-zinc-500 dark:text-zinc-400 mb-1">{label}</dt>
-      <dd className="text-zinc-800 dark:text-zinc-200">{children}</dd>
+      <dt className="text-[10px] uppercase tracking-widest font-semibold text-zinc-600 dark:text-zinc-300 mb-1">{label}</dt>
+      <dd className="text-zinc-800 dark:text-zinc-50">{children}</dd>
     </div>
   )
 }
@@ -186,18 +186,18 @@ function Timeline({ current }: { current: CsrStatus }) {
           <div key={s} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center flex-1">
               <div className={
-                'w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm transition ' +
-                (active   ? 'border-cyan-500 dark:border-cyan-400 bg-cyan-50 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 shadow-lg shadow-cyan-500/30 dot-pulse'
-                : reached ? 'border-emerald-500 dark:border-emerald-400 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
-                          : 'border-zinc-200 dark:border-white/[0.10] bg-zinc-50 dark:bg-white/[0.02] text-zinc-400 dark:text-zinc-600')
+                'w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm transition font-semibold ' +
+                (active   ? 'border-cyan-500 dark:border-cyan-300 bg-cyan-50 dark:bg-cyan-500/30 text-cyan-700 dark:text-cyan-100 shadow-lg shadow-cyan-500/40 dot-pulse'
+                : reached ? 'border-emerald-500 dark:border-emerald-300 bg-emerald-500/15 dark:bg-emerald-500/25 text-emerald-700 dark:text-emerald-100'
+                          : 'border-zinc-300 dark:border-white/[0.25] bg-zinc-50 dark:bg-white/[0.06] text-zinc-500 dark:text-zinc-400')
               }>
                 {reached && !active ? '✓' : i + 1}
               </div>
               <div className={
-                'mt-2 text-[11px] font-medium ' +
-                (active   ? 'text-cyan-700 dark:text-cyan-300'
-                : reached ? 'text-zinc-700 dark:text-zinc-300'
-                          : 'text-zinc-400 dark:text-zinc-600')
+                'mt-2 text-[11px] font-semibold ' +
+                (active   ? 'text-cyan-700 dark:text-cyan-200'
+                : reached ? 'text-zinc-700 dark:text-zinc-100'
+                          : 'text-zinc-500 dark:text-zinc-400')
               }>
                 {m.label}
               </div>
@@ -205,8 +205,8 @@ function Timeline({ current }: { current: CsrStatus }) {
             {i < STATUS_ORDER.length - 1 && (
               <div className={
                 'h-[2px] flex-1 mx-1 mb-6 ' +
-                (i < currentIdx ? 'bg-emerald-500/60 dark:bg-emerald-400/60'
-                                : 'bg-zinc-200 dark:bg-white/[0.08]')
+                (i < currentIdx ? 'bg-emerald-500/70 dark:bg-emerald-400/80'
+                                : 'bg-zinc-200 dark:bg-white/[0.18]')
               } />
             )}
           </div>
